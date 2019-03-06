@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MapService } from '../../services/map.service';
 import { CleanerService } from '../../services/cleaner.service';
-import { TelematryService } from '../../services/telematry.service';
+import { TelemetryService } from '../../services/telemetry.service';
 
 @Component({
   selector: 'app-map-screen',
@@ -29,7 +29,7 @@ export class MapScreenComponent implements OnInit {
 
   Math: any = Math;
 
-  constructor(private mapService: MapService, private cleanerService: CleanerService, private telematryService: TelematryService) { }
+  constructor(private mapService: MapService, private cleanerService: CleanerService, private telemetryService: TelemetryService) { }
 
   ngOnInit() {
     this.mapService.getMap().subscribe((data: String[][]) => {
@@ -56,10 +56,10 @@ export class MapScreenComponent implements OnInit {
     this.cleanerService.getCleaner().subscribe((data: any) => {
       this.currentCleaner = data;
     });
-    this.telematryService.start().subscribe(this.onTelematryMessage.bind(this));
+    this.telemetryService.start().subscribe(this.onTelemetryMessage.bind(this));
   }
 
-  public onTelematryMessage(message): void {
+  public onTelemetryMessage(message): void {
 
     if (this.firstMoveMessageTimestamp == null) {
       this.firstMoveMessageTimestamp = Date.now();

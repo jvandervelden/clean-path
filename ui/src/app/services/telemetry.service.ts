@@ -8,7 +8,7 @@ import * as SockJS from 'sockjs-client';
 @Injectable({
   providedIn: 'root'
 })
-export class TelematryService {
+export class TelemetryService {
 
   constructor() { }
 
@@ -24,7 +24,7 @@ export class TelematryService {
 
     let urlBits = window.location.href.split("/");
 
-    this.socket = new WebSocket("ws://" + urlBits[2] + "/telematry/cleaner/0");
+    this.socket = new WebSocket("ws://" + urlBits[2] + "/telemetry/cleaner/0");
     this.socket.onopen = this.onOpen.bind(this);
     this.socket.onerror = this.onError.bind(this);
     this.socket.onclose = this.onClose.bind(this);
@@ -36,7 +36,7 @@ export class TelematryService {
   }
 
   public onError(): void {
-    console.error("Error connecting to telematry socket");
+    console.error("Error connecting to telemetry socket");
   }
 
   public onClose(): void {

@@ -42,7 +42,7 @@ public class CleanerTelemetry {
 			final HttpResponse response = client.execute(request);
 
 			if (response.getStatusLine().getStatusCode() > 399) {
-				logger.error("Error sending telematry data.");
+				logger.error("Error sending telemetry data.");
 				for (final String errorLine : IOUtils.readLines(response.getEntity().getContent(), "UTF-8")) {
 					logger.error(errorLine);
 				}
@@ -52,9 +52,9 @@ public class CleanerTelemetry {
 
 			return true;
 		} catch (final JsonProcessingException | UnsupportedEncodingException e) {
-			logger.error("Unable to stringify telematry data. ", e);
+			logger.error("Unable to stringify telemetry data. ", e);
 		} catch (final IOException e) {
-			logger.error("Unable to send telematry data. ", e);
+			logger.error("Unable to send telemetry data. ", e);
 		}
 
 		return false;

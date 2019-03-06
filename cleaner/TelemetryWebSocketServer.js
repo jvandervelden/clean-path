@@ -5,16 +5,16 @@ var http = require('http');
 
 var TelemetryWebSocketServer = function () {
 	this.clients = [];
-	this.telematryServer = http.createServer(function(request, response) {});
+	this.telemetryServer = http.createServer(function(request, response) {});
 	this.listenPort = 8080;
 };
 
 TelemetryWebSocketServer.prototype.startServer = function (port) {
 	this.listenPort = port;
 
-	this.telematryServer.listen(port, this.onServiceStarted.bind(this));
+	this.telemetryServer.listen(port, this.onServiceStarted.bind(this));
 	this.wsServer = new WebSocketServer({
-		httpServer: this.telematryServer
+		httpServer: this.telemetryServer
 	});
 
 	this.wsServer.on('request', this.handleClientConnection.bind(this));

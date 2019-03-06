@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { TelematryService } from './telematry.service';
+import { TelemetryService } from './telemetry.service';
 
-describe('TelematryService', () => {
+describe('TelemetryService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: TelematryService = TestBed.get(TelematryService);
+    const service: TelemetryService = TestBed.get(TelemetryService);
     expect(service).toBeTruthy();
   });
 });
