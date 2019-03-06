@@ -1,0 +1,48 @@
+@cellWidth: 15px;
+@cellHeight: 15px;
+
+.map-row {
+    padding: 0;
+    margin: 0;
+    display: flex;
+}
+
+.map-cell {
+    display: inline-block;
+    border: 0.5px solid grey;
+    height: @cellHeight;
+    width: @cellWidth;
+    padding: 0px;
+    margin: 0px;
+    box-sizing: border-box;
+
+
+    &.wall {
+        background-color: wheat;
+    }
+
+    &.cleaner {
+        background-image: url('/assets/img/cleaner.png');
+        background-size: @cellWidth @cellHeight;
+
+        &.north {
+            transform: rotate(180deg);
+        }
+
+        &.east {
+            transform: rotate(-90deg);
+        }
+
+        //&.south {
+            // transform: rotate(0deg);
+        //}
+
+        &.west {
+            transform: rotate(90deg);
+        }
+    }
+
+    &.visited {
+        background-color: aqua;
+    }
+}

@@ -1,0 +1,7 @@
+<div>
+  <div class="map-row" *ngFor="let row of map; let y=index;">
+    <span class="map-cell" *ngFor="let col of row; let x=index;" [class.wall]="col == '#'" 
+      [ngClass]="cleaner.positionX == x && cleaner.positionY == y ? [ 'cleaner', cleaner.direction.toLowerCase() ] : ''"
+      [class.visited]="visited[y][x]"></span>
+  </div>
+</div>
