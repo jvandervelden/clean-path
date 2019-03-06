@@ -10,6 +10,7 @@ Shows a robot cleaning a map.
 ## Running
 
 Execute ./run.sh
-Note: use sudo since run.sh executed docker commands.
+
+Note: use sudo since run.sh executes docker commands.
 
 Open browser to http://localhost:1337/
