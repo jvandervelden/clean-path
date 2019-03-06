@@ -11,7 +11,7 @@ export class MapViewerComponent implements OnInit {
   map: String[][] = [[]];
 
   @Input()
-  visited: boolean[][] = [[]];
+  visited: any[][] = [[]];
 
   @Input()
   cleaner: any = {};

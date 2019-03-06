@@ -2,6 +2,9 @@
   <div class="map-row" *ngFor="let row of map; let y=index;">
     <span class="map-cell" *ngFor="let col of row; let x=index;" [class.wall]="col == '#'" 
       [ngClass]="cleaner.positionX == x && cleaner.positionY == y ? [ 'cleaner', cleaner.direction.toLowerCase() ] : ''"
-      [class.visited]="visited[y][x]"></span>
+      [class.visited-1]="visited[y][x] == 1"
+      [class.visited-2]="visited[y][x] == 2"
+      [class.visited-3]="visited[y][x] == 3"
+      [class.visited-4]="visited[y][x] >= 4"></span>
   </div>
 </div>

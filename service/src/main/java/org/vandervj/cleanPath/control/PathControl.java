@@ -32,6 +32,7 @@ public class PathControl {
 	private static final String MOVE_ACTION = "MOVE";
 	private static final String TURN_LEFT_ACTION = "TURN_LEFT";
 	private static final String TURN_RIGHT_ACTION = "TURN_RIGHT";
+	private static final String WALL_CHARACTER = "#";
 
 	@Inject
 	private MapControl mapControl;
@@ -55,31 +56,39 @@ public class PathControl {
 
 	private List<String> calculatePath(final int initialX, final int initialY, final CleanerDirection initialDirection, final MapDto map) {
 		final List<String> path = new ArrayList<>();
-		final Set<String> visited = new HashSet<>();
 		final Stack<Pair<Integer, Integer>> currentPath = new Stack<>();
+		final Set<String> tilesToVisit = new HashSet<>();
+
+		for (int y = 0; y < map.size(); y++) {
+			for (int x = 0; x < map.get(y).size(); x++) {
+				if (!map.get(y).get(x).equals(WALL_CHARACTER)) {
+					tilesToVisit.add(buildVisited(x, y));
+				}
+			}
+		}
 
 		int x = initialX;
 		int y = initialY;
 		CleanerDirection direction = initialDirection;
 
 		currentPath.push(new ImmutablePair<>(initialX, initialY));
-		visited.add(buildVisited(initialX, initialY));
+		tilesToVisit.remove(buildVisited(initialX, initialY));
 
-		while (currentPath.size() > 0) {
-			final Pair<Triple<Integer, Integer, CleanerDirection>, String[]> nextPosition = getNextMove(x, y, direction, map, visited);
+		while (tilesToVisit.size() > 0) {
+			final Pair<Triple<Integer, Integer, CleanerDirection>, String[]> nextPosition = getNextMove(x, y, direction, map, tilesToVisit);
 
 			if (nextPosition != null) {
 				x = nextPosition.getLeft().getLeft();
 				y = nextPosition.getLeft().getMiddle();
 				direction = nextPosition.getLeft().getRight();
 
-				visited.add(buildVisited(x, y));
+				tilesToVisit.remove(buildVisited(x, y));
 				currentPath.push(new ImmutablePair<>(x, y));
 				path.addAll(Arrays.asList(nextPosition.getRight()));
 			} else {
-				currentPath.pop();
-
 				try {
+					currentPath.pop();
+					
 					final Pair<Integer, Integer> backPosition = currentPath.peek();
 					final CleanerDirection backDirection;
 
@@ -135,30 +144,33 @@ public class PathControl {
 	 * @param y - Current Y position
 	 * @param direction - Current facing direction
 	 * @param map - Map layout
-	 * @param visited - Visited locations
+	 * @param tilesToVisit - Tile locations yet to be visited
 	 * @return Pair - Left is Triple of next x, next y, next direction - Right is moves to get to next position.
 	 */
-	private Pair<Triple<Integer, Integer, CleanerDirection>, String[]> getNextMove(final int x, final int y, final CleanerDirection direction, final MapDto map, final Set<String> visited) {
+	private Pair<Triple<Integer, Integer, CleanerDirection>, String[]> getNextMove(final int x, final int y, final CleanerDirection direction, final MapDto map, final Set<String> tilesToVisit) {
 		final Triple<Integer, Integer, CleanerDirection> forwardPosition = calculateForwardPosition(x, y, direction);
 		final Triple<Integer, Integer, CleanerDirection> leftPosition = calculateLeftPosition(x, y, direction);
 		final Triple<Integer, Integer, CleanerDirection> rightPosition = calculateRightPosition(x, y, direction);
+		final Triple<Integer, Integer, CleanerDirection> backPosition = calculateBackPosition(x, y, direction);
 
-		if (isValidMove(forwardPosition, map, visited)) {
+		if (isValidMove(forwardPosition, map, tilesToVisit)) {
 			return new ImmutablePair<>(forwardPosition, new String[] { MOVE_ACTION });
-		} else if (isValidMove(leftPosition, map, visited)) {
+		} else if (isValidMove(leftPosition, map, tilesToVisit)) {
 			return new ImmutablePair<>(leftPosition, new String[] { TURN_LEFT_ACTION, MOVE_ACTION });
-		} else if (isValidMove(rightPosition, map, visited)) {
+		} else if (isValidMove(rightPosition, map, tilesToVisit)) {
 			return new ImmutablePair<>(rightPosition, new String[] { TURN_RIGHT_ACTION, MOVE_ACTION });
+		} else if (isValidMove(backPosition, map, tilesToVisit)) {
+			return new ImmutablePair<>(backPosition, new String[] { TURN_RIGHT_ACTION, TURN_RIGHT_ACTION, MOVE_ACTION });
 		}
 
 		return null;
 	}
 
-	private boolean isValidMove(final Triple<Integer, Integer, CleanerDirection> nextPosition, final MapDto map, final Set<String> visited) {
+	private boolean isValidMove(final Triple<Integer, Integer, CleanerDirection> nextPosition, final MapDto map, final Set<String> tilesToVisit) {
 		final int x = nextPosition.getLeft();
 		final int y = nextPosition.getMiddle();
 
-		return x >= 0 && y >= 0 && y < map.size() && x < map.get(y).size() && !map.get(y).get(x).equals("#") && !visited.contains(buildVisited(x, y));
+		return x >= 0 && y >= 0 && y < map.size() && x < map.get(y).size() && !map.get(y).get(x).equals(WALL_CHARACTER) && tilesToVisit.contains(buildVisited(x, y));
 	}
 
 	private Triple<Integer, Integer, CleanerDirection> calculateForwardPosition(final int x, final int y, final CleanerDirection direction) {
@@ -205,6 +217,23 @@ public class PathControl {
 				return new ImmutableTriple<>(x - 1, y, nextDirection);
 			case WEST:
 				return new ImmutableTriple<>(x, y - 1, nextDirection);
+			default:
+				throw new AssertionError("Null direction in path");
+		}
+	}
+
+	private Triple<Integer, Integer, CleanerDirection> calculateBackPosition(final int x, final int y, final CleanerDirection direction) {
+		final CleanerDirection nextDirection = CleanerDirection.values()[(direction.ordinal() + 2) % 4];
+
+		switch(direction) {
+			case NORTH:
+				return new ImmutableTriple<>(x, y + 1, nextDirection);
+			case EAST:
+				return new ImmutableTriple<>(x - 1, y, nextDirection);
+			case SOUTH:
+				return new ImmutableTriple<>(x, y - 1, nextDirection);
+			case WEST:
+				return new ImmutableTriple<>(x + 1, y, nextDirection);
 			default:
 				throw new AssertionError("Null direction in path");
 		}
